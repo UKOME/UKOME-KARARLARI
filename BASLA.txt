@@ -1,0 +1,28 @@
+MANISA UKOME ARAMA SİSTEMİ - KURULUM
+==================================
+
+Bu paketi kullanmak için iş yeri bilgisayarına hiçbir program kurmanız gerekmez.
+Cloudflare hesabına da ihtiyacınız yoktur.
+
+1. https://github.com/new adresine girin ve GitHub hesabınızla oturum açın.
+2. Yeni bir PUBLIC depo açın. Adı: manisa-ukome-arama
+3. Bu ZIP dosyasını sağ tıklayıp "Tümünü ayıkla" seçeneğiyle açın.
+4. Klasördeki crawler.py, build_manifest.py, requirements.txt,
+   docs klasörü ve .github klasörü başta olmak üzere bütün dosyaları seçin.
+5. GitHub'da açtığınız depoda "Add file > Upload files" bölümüne sürükleyin.
+   "Commit changes" düğmesine basın.
+6. Aynı depoda "Settings > Pages" bölümünü açın.
+   "Source" alanını "GitHub Actions" olarak seçin.
+7. "Actions > UKOME Arşivini Güncelle ve Yayımla > Run workflow" seçin.
+   GitHub otomatik olarak PDF'leri tarayıp uygulamanın yayınını yapacaktır.
+8. "Settings > Pages" bölümünde verilen web adresini açın.
+
+ÖNEMLİ: İlk yüklemede PDF veritabanı BOŞTUR. İlk GitHub taraması
+başarıyla tamamlanınca 2014'ten bugüne kararlar görünür.
+
+DİKKAT: PUBLIC GitHub Pages herkese açık bir sitedir. Belediyenin
+internette zaten yayımladığı metinler de arama dizininde yayımlanacaktır.
+Kurumsal veri/kişisel veri yayınlama değerlendirmesini yapmadan herkese
+açık yayına almayın.
+
+Diğer açıklamalar için README.md dosyasına bakın.
