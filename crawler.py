@@ -21,7 +21,7 @@ import unicodedata
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import urljoin, urlsplit, urlunsplit
 
 import fitz
 import requests
@@ -78,6 +78,19 @@ def get_page(http: requests.Session, url: str) -> str:
     return r.text
 
 
+def canonical_source_url(url: str) -> str:
+    """Prefer the working www endpoint for municipality URLs.
+
+    The official HTML sometimes links to https://manisa.bel.tr/... instead of
+    https://www.manisa.bel.tr/... . Hosted workers can reach one hostname while
+    being unable to route to the other; normalizing avoids that failure.
+    """
+    u = urlsplit(url)
+    if (u.hostname or "").lower() in {"manisa.bel.tr", "www.manisa.bel.tr"}:
+        return urlunsplit(("https", "www.manisa.bel.tr", u.path, u.query, u.fragment))
+    return url
+
+
 def archive_pages(html: str, base: str = BASE) -> dict[int, str]:
     soup = BeautifulSoup(html, "html.parser")
     pages = {}
@@ -88,7 +101,7 @@ def archive_pages(html: str, base: str = BASE) -> dict[int, str]:
             continue
         year = int(match.group(1))
         if year in YEARS:
-            pages[year] = urljoin(base, anchor["href"])
+            pages[year] = canonical_source_url(urljoin(base, anchor["href"]))
     return pages
 
 
@@ -96,7 +109,7 @@ def decision_links(html: str, year: int, base: str = BASE) -> list[dict]:
     soup = BeautifulSoup(html, "html.parser")
     results = {}
     for a in soup.find_all("a", href=True):
-        url = urljoin(base, a["href"].strip())
+        url = canonical_source_url(urljoin(base, a["href"].strip()))
         path = urlsplit(url).path.casefold()
         if not (path.endswith(".pdf") or ("/upload/" in path and "/dosya/" in path)):
             continue
@@ -267,7 +280,7 @@ def run(output: Path, ocr: bool, max_pages: int, workers: int, full: bool, only_
                 "failed_years": failed_years, "ocr_enabled": ocr}
     (output / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     LOG.info("Bitti: %s PDF bağlantısı, %s metni okunmuş, eksik yıl: %s", manifest["total"], manifest["indexed"], failed_years)
-    return 0 if stats and not failed_years else 1
+    return 0 if stats and not failed_years and any(x["ok"] for x in stats.values()) else 1
 
 
 def main() -> int:
