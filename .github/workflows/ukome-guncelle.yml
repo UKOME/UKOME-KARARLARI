@@ -1,0 +1,113 @@
+name: UKOME Arşivini Güncelle ve Yayımla
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'crawler.py'
+      - 'build_manifest.py'
+      - 'requirements.txt'
+      - 'docs/index.html'
+      - 'docs/style.css'
+      - 'docs/app.js'
+      - '.github/workflows/ukome-guncelle.yml'
+  schedule:
+    # GitHub schedules use UTC: every Monday 06:30 Türkiye time.
+    - cron: '30 3 * * 1'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ukome-public-index
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      years: ${{ steps.years.outputs.json }}
+    steps:
+      - id: years
+        shell: bash
+        run: |
+          echo "json=$(python - <<'PY'
+          from datetime import datetime, timezone
+          import json
+          print(json.dumps(list(range(2014, datetime.now(timezone.utc).year + 1))))
+          PY
+          )" >> "$GITHUB_OUTPUT"
+
+  index-year:
+    needs: discover
+    runs-on: ubuntu-latest
+    timeout-minutes: 325
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        year: ${{ fromJSON(needs.discover.outputs.years) }}
+    steps:
+      - name: Kaynak kodunu al
+        uses: actions/checkout@v4
+      - name: Python hazırla
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: PDF ve OCR araçlarını bulut bilgisayara kur
+        run: |
+          python -m pip install -r requirements.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-tur tesseract-ocr-eng
+      - name: Bir yılın tüm PDF sayfalarını tara
+        continue-on-error: true
+        run: python crawler.py --ocr --year ${{ matrix.year }} --workers 2 --max-pages 0
+      - name: Yıl verisini yayınlama işi için sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: ukome-${{ matrix.year }}
+          path: docs/data/${{ matrix.year }}.json
+          if-no-files-found: warn
+          retention-days: 2
+
+  publish:
+    needs: [discover, index-year]
+    if: always() && needs.index-year.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Kaynak kodunu al
+        uses: actions/checkout@v4
+      - name: Yıl dizinlerini birleştir
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ukome-*
+          path: docs/data
+          merge-multiple: true
+      - name: Toplam raporu oluştur
+        run: python build_manifest.py docs/data
+      - name: Veri dizinini depoya kaydet
+        run: |
+          git config user.name "ukome-archive-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data
+          if ! git diff --cached --quiet; then
+            git commit -m "UKOME karar dizinini güncelle"
+            git push
+          fi
+      - name: GitHub Pages'i hazırla
+        uses: actions/configure-pages@v5
+      - name: Web uygulamasını yayına hazırla
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: Web uygulamasını yayımla
+        id: deployment
+        uses: actions/deploy-pages@v4
