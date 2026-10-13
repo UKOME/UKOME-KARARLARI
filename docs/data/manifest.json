@@ -1,25 +1,117 @@
 {
   "version": 1,
-  "updated_at": "2026-10-13T12:18:36+00:00",
+  "updated_at": "2026-10-13T19:48:01+00:00",
   "origin": "https://www.manisa.bel.tr",
-  "years": [],
-  "stats": {},
-  "total": 0,
-  "indexed": 0,
-  "failed_years": [
-    2014,
-    2015,
-    2016,
-    2017,
-    2018,
-    2019,
-    2020,
-    2021,
-    2022,
-    2023,
-    2024,
+  "years": [
+    2026,
     2025,
-    2026
+    2024,
+    2023,
+    2022,
+    2021,
+    2020,
+    2019,
+    2018,
+    2017,
+    2016,
+    2015,
+    2014
   ],
+  "stats": {
+    "2014": {
+      "total": 69,
+      "ok": 69,
+      "errors": 0,
+      "pages": 112,
+      "ocr_pages": 1
+    },
+    "2015": {
+      "total": 113,
+      "ok": 112,
+      "errors": 1,
+      "pages": 231,
+      "ocr_pages": 6
+    },
+    "2016": {
+      "total": 131,
+      "ok": 131,
+      "errors": 0,
+      "pages": 482,
+      "ocr_pages": 1
+    },
+    "2017": {
+      "total": 129,
+      "ok": 129,
+      "errors": 0,
+      "pages": 401,
+      "ocr_pages": 0
+    },
+    "2018": {
+      "total": 157,
+      "ok": 157,
+      "errors": 0,
+      "pages": 475,
+      "ocr_pages": 0
+    },
+    "2019": {
+      "total": 83,
+      "ok": 83,
+      "errors": 0,
+      "pages": 309,
+      "ocr_pages": 2
+    },
+    "2020": {
+      "total": 63,
+      "ok": 63,
+      "errors": 0,
+      "pages": 226,
+      "ocr_pages": 1
+    },
+    "2021": {
+      "total": 85,
+      "ok": 85,
+      "errors": 0,
+      "pages": 381,
+      "ocr_pages": 1
+    },
+    "2022": {
+      "total": 105,
+      "ok": 105,
+      "errors": 0,
+      "pages": 483,
+      "ocr_pages": 459
+    },
+    "2023": {
+      "total": 121,
+      "ok": 121,
+      "errors": 0,
+      "pages": 408,
+      "ocr_pages": 298
+    },
+    "2024": {
+      "total": 103,
+      "ok": 103,
+      "errors": 0,
+      "pages": 440,
+      "ocr_pages": 1
+    },
+    "2025": {
+      "total": 141,
+      "ok": 140,
+      "errors": 1,
+      "pages": 429,
+      "ocr_pages": 338
+    },
+    "2026": {
+      "total": 89,
+      "ok": 89,
+      "errors": 0,
+      "pages": 313,
+      "ocr_pages": 313
+    }
+  },
+  "total": 1389,
+  "indexed": 1387,
+  "failed_years": [],
   "ocr_enabled": true
 }
