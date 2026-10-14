@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-13T19:48:01+00:00",
+  "updated_at": "2026-10-14T08:35:10+00:00",
   "origin": "https://www.manisa.bel.tr",
   "years": [
     2026,
@@ -27,10 +27,10 @@
     },
     "2015": {
       "total": 113,
-      "ok": 112,
-      "errors": 1,
+      "ok": 113,
+      "errors": 0,
       "pages": 231,
-      "ocr_pages": 6
+      "ocr_pages": 7
     },
     "2016": {
       "total": 131,
@@ -97,10 +97,10 @@
     },
     "2025": {
       "total": 141,
-      "ok": 140,
-      "errors": 1,
-      "pages": 429,
-      "ocr_pages": 338
+      "ok": 141,
+      "errors": 0,
+      "pages": 486,
+      "ocr_pages": 395
     },
     "2026": {
       "total": 89,
@@ -111,7 +111,7 @@
     }
   },
   "total": 1389,
-  "indexed": 1387,
+  "indexed": 1389,
   "failed_years": [],
   "ocr_enabled": true
 }

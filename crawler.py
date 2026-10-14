@@ -143,7 +143,7 @@ def tags(text: str, title: str) -> tuple[list[str], list[str], list[str]]:
 
 
 def extract_pdf(payload: bytes, ocr: bool, max_pages: int) -> tuple[list[str], int, int, list[str]]:
-    pdf = fitz.open(stream=payload, filetype="pdf")
+    pdf = fitz.open(filename=payload) if isinstance(payload, str) else fitz.open(stream=payload, filetype="pdf")
     count = len(pdf)
     if max_pages <= 0:
         max_pages = count
@@ -177,17 +177,25 @@ def index_one(item: dict, ocr: bool, max_pages: int) -> dict:
     record.update({"pages": [], "page_count": 0, "ocr_pages": 0, "status": "error", "errors": []})
     try:
         http = session()
-        with http.get(item["url"], timeout=(12, 65), stream=True) as response:
-            response.raise_for_status()
-            buffer = io.BytesIO()
-            for chunk in response.iter_content(1024 * 512):
-                buffer.write(chunk)
-                if buffer.tell() > 50 * 1024 * 1024:
-                    raise ValueError("PDF 50 MB sınırını aşıyor")
-        payload = buffer.getvalue()
-        if not payload.startswith(b"%PDF-"):
-            raise ValueError("PDF yerine farklı içerik geldi")
-        pages, count, ocr_pages, notices = extract_pdf(payload, ocr, max_pages)
+        # Stream PDFs into a temporary file; do not buffer huge PDFs in RAM.
+        import tempfile
+        with tempfile.TemporaryDirectory(prefix="ukome-pdf-stream-") as folder:
+            pdf_path = Path(folder) / "source.pdf"
+            with http.get(item["url"], timeout=(25, 180), stream=True) as response:
+                response.raise_for_status()
+                total = 0
+                with pdf_path.open("wb") as dest:
+                    for chunk in response.iter_content(1024 * 1024):
+                        if not chunk:
+                            continue
+                        total += len(chunk)
+                        if total > 750 * 1024 * 1024:
+                            raise ValueError("PDF 750 MB güvenlik sınırını aşıyor")
+                        dest.write(chunk)
+            with pdf_path.open("rb") as source_pdf:
+                if source_pdf.read(5) != b"%PDF-":
+                    raise ValueError("PDF yerine farklı içerik geldi")
+            pages, count, ocr_pages, notices = extract_pdf(str(pdf_path), ocr, max_pages)
         record.update({"pages": pages, "page_count": count, "ocr_pages": ocr_pages,
                        "status": "ok" if any(x.strip() for x in pages) else "empty", "errors": notices})
         text = "\n".join(pages)
