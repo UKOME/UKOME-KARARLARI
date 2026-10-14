@@ -1,0 +1,54 @@
+name: UKOME Turkce OCR Kalite Pilot
+
+on:
+  workflow_dispatch:
+    inputs:
+      year:
+        description: 'Karar yili (varsayilan 2015)'
+        required: true
+        default: '2015'
+        type: string
+      number:
+        description: 'Karar numarasi (varsayilan 108)'
+        required: true
+        default: '108'
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - 'ukome_ocr_quality_pilot.py'
+      - '.github/workflows/ukome-ocr-pilot.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  ocr-pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Depoyu oku
+        uses: actions/checkout@v4
+      - name: Python kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Turkce OCR araclarini kur
+        run: |
+          python -m pip install -r requirements.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-tur tesseract-ocr-eng
+      - name: PDF ile mevcut metni karsilastir
+        env:
+          TEST_YEAR: ${{ github.event.inputs.year || '2015' }}
+          TEST_NUMBER: ${{ github.event.inputs.number || '108' }}
+        run: |
+          python ukome_ocr_quality_pilot.py --year "$TEST_YEAR" --number "$TEST_NUMBER" --output reports/ocr-pilot
+      - name: OCR sonucunu indirilebilir rapor olarak sakla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ukome-turkce-ocr-kalite-pilot
+          path: reports/ocr-pilot/
+          if-no-files-found: warn
+          retention-days: 30
