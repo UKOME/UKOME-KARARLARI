@@ -8,6 +8,7 @@ on:
       - 'docs/index.html'
       - 'docs/style.css'
       - 'docs/app.js'
+      - 'docs/search_core.js'
       - '.github/workflows/ukome-arayuz-yayinla.yml'
       - 'build_agenda_index.py'
 
