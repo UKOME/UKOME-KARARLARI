@@ -1,0 +1,56 @@
+name: UKOME iki eksik PDF onarimi
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ukome-public-index
+  cancel-in-progress: false
+
+jobs:
+  onar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Mevcut arsivi al
+        uses: actions/checkout@v4
+      - name: Python hazirla
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Yalnizca iki PDF icin OCR araclarini kur
+        run: |
+          python -m pip install -r requirements.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-tur tesseract-ocr-eng
+      - name: Iki eksik belgeyi onar
+        run: python ukome_onar.py
+      - name: Toplam istatistikleri yeniden hesapla
+        run: python build_manifest.py docs/data
+      - name: Yalnizca duzeltilen arşiv kayitlarini kaydet
+        run: |
+          git config user.name 'ukome-archive-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add crawler.py docs/data/2015.json docs/data/2025.json docs/data/manifest.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Eksik belgeler ve kalici buyuk PDF duzeltmesi [skip ci]'
+            git push
+          fi
+      - name: GitHub Pages'i hazirla
+        uses: actions/configure-pages@v5
+      - name: Var olan site ve duzeltilen veriyi hazirla
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: Uygulamayi yeniden yayimla
+        id: deployment
+        uses: actions/deploy-pages@v4
