@@ -1,0 +1,29 @@
+name: UKOME Turkce Metin Kalite Haritasi
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'ukome_text_quality_audit.py'
+      - '.github/workflows/ukome-ocr-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Depoyu oku
+        uses: actions/checkout@v4
+      - name: Mevcut 4747 sayfanin metin kalitesini tara (PDF indirme yok)
+        run: python3 ukome_text_quality_audit.py
+      - name: Denetim raporunu indirilebilir sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: ukome-turkce-metin-kalite-haritasi
+          path: reports/ocr-quality-audit/
+          if-no-files-found: error
+          retention-days: 30
