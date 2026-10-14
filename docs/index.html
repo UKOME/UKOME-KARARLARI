@@ -18,8 +18,8 @@
     <section class="hero">
       <div class="hero-inner">
         <div class="eyebrow">ULAŞIM KOORDİNASYON MERKEZİ <span class="eyebrow-separator">/</span> KARAR ARŞİVİ</div>
-        <h1>Aradığınız karara<br><em>birkaç saniyede ulaşın.</em></h1>
-        <p>Yıllara yayılmış UKOME kararlarını şirket, mahalle, ilçe, karar konusu veya herhangi bir kelime ile tek ekrandan sorgulayın.</p>
+        <h1>UKOME kararlarını<br><em>tek yerden bulun.</em></h1>
+        <p>Aradığınız firma, yer, karar numarası veya konuyu yazın. Doğru belgeyi ve ilgili sayfayı hızlıca bulun.</p>
         <div class="hero-stats">
           <div><strong id="stat-docs">—</strong><span>PDF belgesi</span></div><i></i>
           <div><strong id="stat-pages">—</strong><span>İşlenen sayfa</span></div><i></i>
@@ -30,31 +30,47 @@
     </section>
     <main class="workspace">
       <div class="search-panel">
-        <div class="panel-heading"><h2>Karar arama</h2><span class="search-hint">Birden fazla ölçüt birlikte kullanılabilir</span></div>
+        <div class="panel-heading"><h2>Karar arama</h2><span class="search-hint">Birden fazla ölçüt birlikte kullanılabilir · Filtreler aynı anda uygulanır</span></div>
         <div class="search-main">
-          <div class="search-box"><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input id="q" type="search" autocomplete="off" placeholder="Kasis, duba, Manisa Seyahat, D4, cadde adı..." aria-label="Tüm karar metinlerinde arama"><kbd>ARAMA</kbd></div>
+          <div class="search-box"><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input id="q" type="search" autocomplete="off" placeholder="Firma, sokak, karar no, kasis veya aradığınız herhangi bir ifade..." aria-label="Tüm karar metinlerinde arama"><kbd>ARAMA</kbd></div>
           <select id="mode" aria-label="Arama eşleşme biçimi"><option value="all">Tüm kelimeler</option><option value="exact">Tam ifade</option><option value="any">Herhangi bir kelime</option></select>
         </div>
-        <div class="examples"><span>Örnek aramalar</span><button type="button" data-term="Manisa Seyahat">Manisa Seyahat</button><button type="button" data-term="kasis">Kasis</button><button type="button" data-term="duba">Duba</button><button type="button" data-term="çekici">Çekici</button><button type="button" data-term="D4">D4 yetki belgesi</button></div>
-        <div class="filter-heading"><strong>Gelişmiş filtreler</strong><button id="clear" type="button">Filtreleri temizle <span>×</span></button></div>
+        <div class="examples"><span>Hızlı aramalar</span><button type="button" data-term="Manisa Seyahat">Manisa Seyahat</button><button type="button" data-term="kasis">Kasis</button><button type="button" data-term="duba">Duba</button><button type="button" data-term="çekici">Çekici</button><button type="button" data-term="D4">D4 yetki belgesi</button><button type="button" data-term="yaya geçidi">Yaya geçidi</button><button type="button" data-term="muhtar">Muhtar</button></div>
+        <div class="filter-heading"><strong>Hızlı daraltma</strong><button id="clear" type="button">Aramayı temizle <span>×</span></button></div>
         <div class="filters">
           <label>Karar yılı<select id="year"><option value="">Tüm yıllar</option></select></label>
           <label>İlçe<select id="district"><option value="">Tüm ilçeler</option></select></label>
           <label>Karar konusu<select id="topic"><option value="">Tüm konular</option></select></label>
+        </div>
+        <details id="advanced-panel" class="advanced-panel"><summary>Diğer arama seçeneklerini göster <span>Firma, mahalle, cadde, kişi, birim ve karar numarası</span></summary><div class="filters more-filters">
           <label>Mahalle / yer adı<input id="neighborhood" type="search" placeholder="Örn. Muradiye"></label>
           <label>Firma / kurum adı<input id="company" type="search" placeholder="Örn. Manisa Seyahat"></label>
-          <label>Belge durumu<select id="status"><option value="">Tüm belgeler</option><option value="ok">Tam metni okunmuş</option><option value="error">Okunamayan belgeler</option></select></label>
-        </div>
+          <label>Karar numarası<input id="decisionNo" type="search" placeholder="Örn. 2025-123 veya 123"></label>
+          <label>Yol türü<select id="roadType"><option value="">Sokak, cadde veya bulvar</option><option value="sokak">Sokak</option><option value="cadde">Cadde</option><option value="bulvar">Bulvar</option></select></label>
+          <label>Sokak / cadde / bulvar adı<input id="roadName" type="search" placeholder="Örn. Mimar Sinan"></label>
+          <label>Kişi adı<input id="person" type="search" placeholder="Örn. ad ve soyad"></label>
+          <label>Kurum / belediye birimi<input id="unit" type="search" placeholder="Örn. Trafik Hizmetleri"></label>
+          <label>Başvuru / talep sahibi<select id="applicant"><option value="">Tüm başvurular</option><option value="muhtar">Muhtar / muhtarlık geçen</option><option value="firma">Firma / kooperatif geçen</option><option value="vatandas">Vatandaş / şahıs geçen</option><option value="kurum">Kurum / müdürlük geçen</option></select></label>
+          <label>Belge durumu<select id="status"><option value="">Tüm belgeler</option><option value="ok">Metni okunmuş</option><option value="error">Okunamayan belgeler</option></select></label>
+        </div></details>
+        <p class="scope-note">Sonuçlarda eşleşen bölüm ve PDF'nin gerçek sayfa numarası gösterilir. Gündem ayrımı, yalnızca belgede belirgin başlık varsa yapılır.</p>
       </div>
       <section class="results">
         <div class="results-head">
           <div><div class="section-kicker">ARAMA SONUÇLARI</div><h2 id="result-title">Kararlar yükleniyor…</h2><p id="result-description" class="result-description">Karar arşivi kontrol ediliyor.</p></div>
-          <div class="result-actions"><button type="button" id="export" disabled title="Sonuç listesini CSV olarak indir">↧ CSV aktar</button><select id="sort" aria-label="Sıralama"><option value="recent">Yeniden eskiye</option><option value="old">Eskiden yeniye</option><option value="relevance">İlgi sırasına göre</option></select></div>
+          <div class="result-actions"><button type="button" id="export" disabled title="Sonuç listesini CSV olarak indir">↧ CSV aktar</button><select id="sort" aria-label="Sıralama"><option value="relevance">En ilgili sonuç</option><option value="recent">Yeniden eskiye</option><option value="old">Eskiden yeniye</option></select></div>
         </div>
         <div id="alert" class="alert" role="status" hidden></div>
         <div id="results-list" aria-live="polite"></div>
         <div class="pagination" id="pagination" hidden><span id="page-info"></span><div><button id="prev" type="button">← Önceki</button><button id="next" type="button">Sonraki →</button></div></div>
       </section>
+      <dialog id="reader" aria-labelledby="reader-title" class="reader-dialog">
+        <div class="reader-shell">
+          <div class="reader-header"><div><p class="reader-kicker">UKOME KARAR METNİ</p><h2 id="reader-title"></h2><p id="reader-meta"></p></div><button type="button" id="reader-close" class="reader-close" aria-label="Metni kapat">✕ Kapat</button></div>
+          <div class="reader-controls"><button type="button" id="reader-prev">← Önceki sayfa</button><label>Sayfa <select id="reader-page" aria-label="Görüntülenecek sayfa"></select></label><button type="button" id="reader-next">Sonraki sayfa →</button><a id="reader-pdf" href="#" target="_blank" rel="noopener noreferrer">Orijinal PDF ↗</a></div>
+          <div class="reader-content"><p class="reader-notice">Metin PDF'den otomatik çıkarılmıştır. Özellikle OCR uygulanmış sayfalarda harf hataları bulunabilir. Hukuken geçerli kaynak PDF'dir.</p><div id="reader-text" class="reader-text"></div></div>
+        </div>
+      </dialog>
     </main>
     <footer><p><strong>Manisa UKOME Karar Arşivi</strong> · Bağımsız arama aracı; Manisa Büyükşehir Belediyesi'nin resmî sitesi değildir.</p><p>Kaynak: <a href="https://www.manisa.bel.tr/t23_ulasim-dairesi-baskanligi.aspx?sayfa=icerik&sid=3052" target="_blank" rel="noopener noreferrer">Manisa Büyükşehir Belediyesi UKOME arşivi ↗</a> · Son indeks: <span id="updated">—</span></p><p>Gösterilen metinler bilgi amaçlıdır. Hukuken geçerli karar için mutlaka kaynak PDF'yi kontrol edin.</p></footer>
   </div>
