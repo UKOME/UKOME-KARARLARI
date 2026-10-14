@@ -78,7 +78,7 @@ def inventory(data_dir: Path, out_dir: Path):
     print('DATA QUALITY INVENTORY')
     print(json.dumps({'total':report['total'],'years':len(years),'priority_pages':len(rows)},ensure_ascii=False))
     for y in years:
-        print(f"{y['year']}: {y['pages']} pages, high_priority={y['high_priority']}, review={y['review']}, short_or_blank={y['short_or_blank']}")
+        print(f"{y['year']}: {y.get('pages',0)} pages, high_priority={y.get('high_priority',0)}, review={y.get('review',0)}, short_or_blank={y.get('short_or_blank',0)}")
     return report
 
 if __name__=='__main__':
