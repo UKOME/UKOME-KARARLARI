@@ -1,0 +1,73 @@
+{
+  "source": "indexed full text",
+  "detected_agenda_documents": 0,
+  "total_agenda_items": 1389,
+  "unsplit_documents": 1389,
+  "years": {
+    "2014": {
+      "documents": 69,
+      "items": 69,
+      "separated": 0
+    },
+    "2015": {
+      "documents": 113,
+      "items": 113,
+      "separated": 0
+    },
+    "2016": {
+      "documents": 131,
+      "items": 131,
+      "separated": 0
+    },
+    "2017": {
+      "documents": 129,
+      "items": 129,
+      "separated": 0
+    },
+    "2018": {
+      "documents": 157,
+      "items": 157,
+      "separated": 0
+    },
+    "2019": {
+      "documents": 83,
+      "items": 83,
+      "separated": 0
+    },
+    "2020": {
+      "documents": 63,
+      "items": 63,
+      "separated": 0
+    },
+    "2021": {
+      "documents": 85,
+      "items": 85,
+      "separated": 0
+    },
+    "2022": {
+      "documents": 105,
+      "items": 105,
+      "separated": 0
+    },
+    "2023": {
+      "documents": 121,
+      "items": 121,
+      "separated": 0
+    },
+    "2024": {
+      "documents": 103,
+      "items": 103,
+      "separated": 0
+    },
+    "2025": {
+      "documents": 141,
+      "items": 141,
+      "separated": 0
+    },
+    "2026": {
+      "documents": 89,
+      "items": 89,
+      "separated": 0
+    }
+  }
+}
