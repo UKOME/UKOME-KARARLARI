@@ -1,0 +1,52 @@
+name: UKOME Arayuzunu Hizli Yayinla
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/index.html'
+      - 'docs/style.css'
+      - 'docs/app.js'
+      - '.github/workflows/ukome-arayuz-yayinla.yml'
+      - 'build_agenda_index.py'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ukome-only-website
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Site ve mevcut arsiv verilerini al
+        uses: actions/checkout@v4
+      - name: Var olan PDF metinlerinden gundem dizini cikar (PDF indirme yok)
+        run: python build_agenda_index.py docs/data
+      - name: Yeni gundem dizinini sakla
+        run: |
+          git config user.name "ukome-archive-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/agenda
+          if ! git diff --cached --quiet; then
+            git commit -m "UKOME gundem maddesi dizinini guncelle"
+            git push
+          fi
+      - name: GitHub Pages'i hazirla
+        uses: actions/configure-pages@v5
+      - name: Degismeyen veriyle arayuzu hazirla
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: Yalnizca arayuzu yayinla
+        id: deployment
+        uses: actions/deploy-pages@v4
