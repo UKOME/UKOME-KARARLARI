@@ -204,30 +204,25 @@
   }
   const pdfPage = (d, page) => (d.pageMap && d.pageMap[page]!==undefined ? d.pageMap[page] : page) + 1;
   function recompute() {
-    const f = currentFilters();
-    const q = norm(f.q), company = norm(f.company), neighborhood = norm(f.neighborhood), person=norm(f.person), unit=norm(f.unit);
-    state.filtered = state.docs.filter(d => {
-      if (f.year && String(d.year) !== f.year) return false;
-      if (f.district && !(d.districts || []).includes(f.district) && !d._search.includes(norm(f.district))) return false;
-      if (!topicMatches(d, f.topic)) return false;
-      if (!numberMatches(d, f.decisionNo)) return false;
-      if (!roadMatches(d, f.roadName, f.roadType)) return false;
-      if (person && !d._search.includes(person)) return false;
-      if (unit && !d._search.includes(unit)) return false;
-      if (f.applicant && !applicants[f.applicant].some(word=>d._search.includes(norm(word)))) return false;
-      if (f.status && (f.status === 'error' ? d.status === 'ok' : d.status !== 'ok')) return false;
-      if (q && !matchMode(d._search, f.q, f.mode)) return false;
-      if (company && !d._search.includes(company)) return false;
-      if (neighborhood && !d._search.includes(neighborhood)) return false;
-      return true;
+    const f=currentFilters();
+    state.filtered=state.docs.filter(d=>{
+      if(f.year && String(d.year)!==f.year)return false;
+      if(f.status && (f.status==='error' ? d.status==='ok' : d.status!=='ok'))return false;
+      if(f.decisionNo&&!numberMatches(d,f.decisionNo))return false;
+      // A decision number typed in the main search box is recognized from metadata.
+      let searchFilters=f;
+      if(UKOMESearch.isDecisionNumberQuery(f.q)){
+        if(!numberMatches(d,f.q))return false;
+        searchFilters={...f,q:''};
+      }
+      const evidence=UKOMESearch.matchRecord(d,searchFilters);
+      d._evidence=evidence;
+      return evidence.matched;
     });
-    const relevance = (d) => {
-      if (!f.q && !f.company && !f.neighborhood) return 0;
-      return [f.q, f.company, f.neighborhood].filter(Boolean).reduce((score, term)=> score + (norm(d.title).includes(norm(term)) ? 5 : 0) + (d._search.includes(norm(term)) ? 2 : 0), 0);
-    };
-    const chronological = (a,b) => b.year - a.year || (b.number||0) - (a.number||0);
-    state.filtered.sort(f.sort === 'old' ? (a,b)=>-chronological(a,b) : f.sort === 'relevance' ? (a,b)=>relevance(b)-relevance(a)||chronological(a,b) : chronological);
-    state.page=1; render();
+    const chronological=(a,b)=>b.year-a.year||(b.number||0)-(a.number||0);
+    const relevance=d=>(d._evidence?.score||0)+(UKOMESearch.norm(d.title).includes(UKOMESearch.norm(f.q||'').trim())&&f.q?10:0);
+    state.filtered.sort(f.sort==='old'?(a,b)=>-chronological(a,b):f.sort==='relevance'?(a,b)=>relevance(b)-relevance(a)||chronological(a,b):chronological);
+    state.page=1;render();
   }
   function render() {
     if (!state.ready) return;
@@ -244,13 +239,13 @@
     } else {
       $('results-list').innerHTML = visible.map(d=> {
         const terms = [f.q, f.company, f.neighborhood, f.roadName, f.person, f.unit].filter(Boolean);
-        const page = findPage(d, ...terms);
+        const page = d._evidence?.page >= 0 ? d._evidence.page : findPage(d, ...terms);
         const taglist = [ ...(d.districts||[]).slice(0,3), ...(d.topics||[]).slice(0,3), ...(d.neighborhoods||[]).slice(0,2) ];
         const pdf = d.url && /^https:\/\//i.test(d.url) ? d.url : '#';
         const address = pdf === '#' ? '#' : pdf + (page >= 0 ? `#page=${pdfPage(d,page)}` : '');
-        const sample = excerpt(d, Math.max(0,page), ...terms);
+        const sample = d._evidence?.snippetStart !== undefined && d._evidence.page >= 0 ? ((d.pages?.[page]||'').slice(d._evidence.snippetStart, d._evidence.snippetStart+360)) : excerpt(d, Math.max(0,page), ...terms);
         const count = d.segmented ? d.pages.length : (d.page_count||d.pages?.length||0);
-        return `<article class="result-card"><div class="card-top"><span class="year-pill">${safe(d.year)}</span><span class="no-pill">${d.number ? 'KARAR '+String(d.number).padStart(2,'0') : 'KARAR ARŞİVİ'}</span><span class="card-status ${d.status!=='ok'?'is-error':''}">${d.status==='ok'?'● Metni okundu':'○ Metin okunamadı'}</span></div><h3 class="card-title">${safe(d.title)}</h3>${d.segmented?'<div class="agenda-note">Açık başlıktan ayrıştırılmış gündem maddesi · Kaynak PDF korunuyor</div>':''}<p class="card-snippet">${emphasize(sample, terms)}</p><div class="card-meta">${taglist.map(t=>`<span class="tag">${safe(t)}</span>`).join('')}${!taglist.length?'<span class="tag">Konu başlığından eşleşen sonuç</span>':''}</div><div class="card-foot"><span class="page-line">${count ? `${number(count)} sayfa` : 'Sayfa bilgisi yok'}${page>=0 ? ` · PDF sayfası: ${pdfPage(d,page)}` : ''}${d.ocr_pages ? ` · ${d.ocr_pages} OCR` : ''}</span><div class="card-actions"><button type="button" class="read-link" data-doc="${safe(d.id)}">Karar metnini görüntüle</button><a class="pdf-link" href="${safe(address)}" target="_blank" rel="noopener noreferrer">Kaynak PDF'yi aç ↗</a></div></div></article>`;
+        return `<article class="result-card"><div class="card-top"><span class="year-pill">${safe(d.year)}</span><span class="no-pill">${d.number ? 'KARAR '+String(d.number).padStart(2,'0') : 'KARAR ARŞİVİ'}</span><span class="card-status ${d.status!=='ok'?'is-error':''}">${d.status==='ok'?'● Metni okundu':'○ Metin okunamadı'}</span></div><h3 class="card-title">${safe(d.title)}</h3>${d.segmented?'<div class="agenda-note">Açık başlıktan ayrıştırılmış gündem maddesi · Kaynak PDF korunuyor</div>':''}<p class="card-snippet">${emphasize(sample, terms)}</p><div class="card-meta">${taglist.map(t=>`<span class="tag">${safe(t)}</span>`).join('')}${!taglist.length?'<span class="tag">Konu başlığından eşleşen sonuç</span>':''}</div><div class="card-foot"><span class="page-line">${count ? `${number(count)} sayfa` : 'Sayfa bilgisi yok'}${page>=0 ? ` · PDF sayfası: ${pdfPage(d,page)}` : ''}${d._evidence?.evidence==='same-passage' && d._evidence?.groupCount>1 ? ' · Ölçütler aynı bölümde' : ''}${d.ocr_pages ? ` · ${d.ocr_pages} OCR` : ''}</span><div class="card-actions"><button type="button" class="read-link" data-doc="${safe(d.id)}">Karar metnini görüntüle</button><a class="pdf-link" href="${safe(address)}" target="_blank" rel="noopener noreferrer">Kaynak PDF'yi aç ↗</a></div></div></article>`;
       }).join('');
     }
     $('pagination').hidden=pageCount<=1;
@@ -294,7 +289,7 @@
     if(!d) return;
     state.activeDoc=d;
     const f=currentFilters();
-    const page=findPage(d,...[f.q,f.company,f.neighborhood,f.roadName,f.person,f.unit].filter(Boolean));
+    const page=d._evidence?.page >= 0 ? d._evidence.page : findPage(d,...[f.q,f.company,f.neighborhood,f.roadName,f.person,f.unit].filter(Boolean));
     state.readerPage=Math.max(0,page);
     $('reader-title').textContent=d.title;
     const picker=$('reader-page');

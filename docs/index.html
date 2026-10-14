@@ -30,7 +30,7 @@
     </section>
     <main class="workspace">
       <div class="search-panel">
-        <div class="panel-heading"><h2>Karar arama</h2><span class="search-hint">Birden fazla ölçüt birlikte kullanılabilir · Filtreler aynı anda uygulanır</span></div>
+        <div class="panel-heading"><h2>Karar arama</h2><span class="search-hint">Birden fazla ölçüt aynı karar bölümünde aranır; ilgisiz kelimeler birleştirilmez</span></div>
         <div class="search-main">
           <div class="search-box"><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input id="q" type="search" autocomplete="off" placeholder="Firma, sokak, karar no, kasis veya aradığınız herhangi bir ifade..." aria-label="Tüm karar metinlerinde arama"><kbd>ARAMA</kbd></div>
           <select id="mode" aria-label="Arama eşleşme biçimi"><option value="all">Tüm kelimeler</option><option value="exact">Tam ifade</option><option value="any">Herhangi bir kelime</option></select>
@@ -53,7 +53,7 @@
           <label>Başvuru / talep sahibi<select id="applicant"><option value="">Tüm başvurular</option><option value="muhtar">Muhtar / muhtarlık geçen</option><option value="firma">Firma / kooperatif geçen</option><option value="vatandas">Vatandaş / şahıs geçen</option><option value="kurum">Kurum / müdürlük geçen</option></select></label>
           <label>Belge durumu<select id="status"><option value="">Tüm belgeler</option><option value="ok">Metni okunmuş</option><option value="error">Okunamayan belgeler</option></select></label>
         </div></details>
-        <p class="scope-note">Sonuçlarda eşleşen bölüm ve PDF'nin gerçek sayfa numarası gösterilir. Gündem ayrımı, yalnızca belgede belirgin başlık varsa yapılır.</p>
+        <p class="scope-note">Birlikte seçilen ölçütler aynı metin bölümünde aranır. İlgisi kanıtlanamayan eşleşmeler gösterilmez. Metin tanıma hataları bazı sonuçları eksiltebilir; kaynak PDF esas alınır.</p>
       </div>
       <section class="results">
         <div class="results-head">
@@ -74,6 +74,7 @@
     </main>
     <footer><p><strong>Manisa UKOME Karar Arşivi</strong> · Bağımsız arama aracı; Manisa Büyükşehir Belediyesi'nin resmî sitesi değildir.</p><p>Kaynak: <a href="https://www.manisa.bel.tr/t23_ulasim-dairesi-baskanligi.aspx?sayfa=icerik&sid=3052" target="_blank" rel="noopener noreferrer">Manisa Büyükşehir Belediyesi UKOME arşivi ↗</a> · Son indeks: <span id="updated">—</span></p><p>Gösterilen metinler bilgi amaçlıdır. Hukuken geçerli karar için mutlaka kaynak PDF'yi kontrol edin.</p></footer>
   </div>
+  <script src="search_core.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>
