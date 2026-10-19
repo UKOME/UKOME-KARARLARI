@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-14T08:35:10+00:00",
+  "updated_at": "2026-10-19T07:13:59+00:00",
   "origin": "https://www.manisa.bel.tr",
   "years": [
     2026,
@@ -100,7 +100,7 @@
       "ok": 141,
       "errors": 0,
       "pages": 486,
-      "ocr_pages": 395
+      "ocr_pages": 393
     },
     "2026": {
       "total": 89,
